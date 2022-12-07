@@ -4,12 +4,11 @@ A simple DBus service that exposes various controls and settings related to the
 Pine64 Pinenote via system-wide DBus interface. The service is written in rust
 and uses the dbus-rs crate (https://github.com/diwic/dbus-rs).
 
-.. warning::
-
-	This is my very first rust program and my very first DBus experience.
-	Expect bugs and basically every beginners mistake related to rust and DBus
-	;-) I would be very grateful to any bug reports and style/programming
-	suggestions!
+> **Warning**
+> This is my very first rust program and my very first DBus experience.
+> Expect bugs and basically every beginners mistake related to rust and DBus
+> ;-) I would be very grateful to any bug reports and style/programming
+> suggestions!
 
 # Compilation
 
@@ -39,7 +38,7 @@ DBus services on the system bus are subject to security restrictions and
 require explicit permission setting. This was attempted using the configuration
 file **dbus_security_configuration/pinenote.conf**, which should be placed in
 here **/etc/dbus-1/system.d/pinenote.conf** (done automatically by the Debian
-package [TODO]).
+package).
 
 # Usage
 
