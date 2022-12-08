@@ -1,0 +1,5 @@
+Based upon https://github.com/diwic/dbus-rs/blob/master/dbus-crossroads/examples/server_cr.rs
+The code is Apache 2.0 / MIT dual licensed, following the licensing scheme of the dbus-rs
+project.
+Copyright of the dbus-rs project: (c) 2014-2018 David Henningsson <diwic@ubuntu.com> and other
+contributors

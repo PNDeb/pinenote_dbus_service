@@ -1,0 +1,27 @@
+[package]
+name = "pinenote_dbus_service"
+version = "0.1.0"
+edition = "2021"
+license = "Dual Apache 2.0 / MIT"
+authors = [
+	"Maximilian Weigand <mweigand@mweigand.net>"
+]
+description = "A DBus service for the Pine64 Pinenote"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+dbus = "0.9.6"
+dbus-crossroads = "0.5.1"
+libc = "0.2.137"
+nix = "0.25.0"
+
+# for Debian packaging (cargo deb -v)
+[package.metadata.deb]
+maintainer = "Maximilian Weigand <mweigand@mweigand.net>"
+maintainer-scripts = "debian/"
+systemd-units = { start = true, enable=true, unit-scripts= "systemd_units/"}
+assets = [
+    ["target/release/pinenote_dbus_service", "usr/bin/", "755"],
+	["dbus_security_configuration/pinenote.conf", "/etc/dbus-1/system.d/pinenote.conf",  "644"],
+]

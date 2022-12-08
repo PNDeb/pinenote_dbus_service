@@ -1,0 +1,8 @@
+[Unit]
+Description=Pinenote DBUS service
+
+[Service]
+ExecStart=/usr/bin/pinenote_dbus_service
+
+[Install]
+WantedBy=multi-user.target
