@@ -40,7 +40,7 @@ use nix::ioctl_readwrite_bad;
 
 // number comes from a c printf(%lu, ....)
 const DRM_IOCTL_ROCKCHIP_EBC_GLOBAL_REFRESH: u64 = 3221316672;
-ioctl_readwrite_bad!(ebc_ioctl, DRM_IOCTL_ROCKCHIP_EBC_GLOBAL_REFRESH, libc::c_char);
+ioctl_readwrite_bad!(ebc_ioctl, DRM_IOCTL_ROCKCHIP_EBC_GLOBAL_REFRESH, libc::c_uchar);
 
 pub fn trigger_global_refresh() {
     println!("Hello, world!");

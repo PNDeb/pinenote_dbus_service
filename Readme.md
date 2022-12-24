@@ -10,6 +10,17 @@ and uses the dbus-rs crate (https://github.com/diwic/dbus-rs).
 > ;-) I would be very grateful to any bug reports and style/programming
 > suggestions!
 
+# Requirements and target platform
+
+This program is intended solely to run on the Pine64 Pinenote (arm64) and
+requires the ebc driver modifications from here to be present:
+
+https://github.com/m-weigand/linux/tree/mw/rk35/ebc-drm-v5-modifications-t1
+
+These modifications are also merged in the user-usable kernel branch found here:
+
+https://github.com/m-weigand/linux/tree/mw/rk35/pinenote-next-t1
+
 # Compilation
 
 Compile with:
