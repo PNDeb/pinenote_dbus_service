@@ -20,6 +20,7 @@ use std::error::Error;
 
 mod ebc_ioctl;
 mod sys_handler;
+mod usb_modes;
 
 // This is the object that we are going to store inside the crossroads instance and that will be
 // provided to all methods
@@ -32,6 +33,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let c = Connection::new_system()?;
     c.request_name("org.pinenote.ebc", false, true, false)?;
     c.request_name("org.pinenote.pen", false, true, false)?;
+    c.request_name("org.pinenote.usb", false, true, false)?;
 
     // Create a new crossroads instance.
     // The instance is configured so that introspection and properties interfaces
@@ -216,10 +218,49 @@ fn main() -> Result<(), Box<dyn Error>> {
         );
     });
 
+    let iface_token3 = cr.register("org.pinenote.usb", |b| {
+        // we use this signal to notify users of a cable connection
+        let usb_cable_connected = b.signal::<( ), _>("USBCableConnected", ()).msg_fn();
+
+        // this method is used to signal to the service
+        b.method(
+            "usb_cable_connected",
+            (),
+            (),
+            move |_ctx: &mut Context, _hello: &mut EbcObject, ()| {
+                // ebc_ioctl::trigger_global_refresh();
+                println!("usb_cable_connected was called");
+                Ok(())
+            }
+        );
+
+        b.method(
+            "usb_gadget_activate_mtp",
+            (),
+            (),
+            move |_ctx: &mut Context, _hello: &mut EbcObject, ()| {
+                usb_modes::activate_mtp_gadget();
+                Ok(())
+            }
+        );
+
+
+
+    });
+
+    /* We need:
+     *  activate usb-mtp
+     *  activate usb-network
+     *  activate usb-tablet mode
+     *  maybe: reset charge mode?
+     *
+     * */
+
     // Let's add the "/" path, which implements the com.example.dbustest interface,
     // to the crossroads instance.
     cr.insert("/ebc", &[iface_token], EbcObject{});
     cr.insert("/pen", &[iface_token2], EbcObject{});
+    cr.insert("/usb", &[iface_token3], EbcObject{});
 
     // Serve clients forever.
     println!("Starting PineNote DBUS service");
