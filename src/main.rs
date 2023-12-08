@@ -47,6 +47,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         // // The msg_fn returns a boxed function, which when called constructs the message to be emitted.
         let waveform_changed = b.signal::<( ), _>("WaveformChanged", ()).msg_fn();
         let bwmode_changed = b.signal::<( ), _>("BwModeChanged", ()).msg_fn();
+        let request_quality_or_performance_mode = b.signal::<(u8, ), _>("ReqQualityOrPerformance", ("requested_mode", )).msg_fn();
 
         // we need setters/getters for:
         // auto_refresh
@@ -161,6 +162,50 @@ fn main() -> Result<(), Box<dyn Error>> {
             }
         );
 
+        b.method(
+            "SetDclkSelect",
+            ("state", ),
+            (),
+            move |_ctx: &mut Context, _dum: &mut EbcObject, (state, ): (u8, )| {
+                sys_handler::set_dclk_select(state);
+
+                Ok(())
+            }
+        );
+
+        b.method(
+            "GetDclkSelect",
+            (),
+            ("dclk_select", ),
+            move |_ctx: &mut Context, _dum: &mut EbcObject, ( )| {
+                let ret_value = sys_handler::get_dclk_select();
+
+                Ok((ret_value, ))
+            }
+        );
+
+        b.method(
+            "RequestQualityOrPerformanceMode",
+            ("mode_request", ),
+            (),
+            move |_ctx: &mut Context, _dum: &mut EbcObject, (mode_request, ): (u8, )| {
+
+                match mode_request{
+                    // quality mode
+                    0 | 1 => {
+                        let signal_msg = request_quality_or_performance_mode(
+                            _ctx.path(), &(mode_request, )
+                        );
+                        _ctx.push_msg(signal_msg);
+                    },
+                    _ => println!("Got a request for an unknown performance mode"),
+
+                }
+
+                Ok(())
+            }
+        );
+
         // set-function for all (work on progress)
         b.method(
             "SetEBCParameters",
@@ -220,7 +265,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let iface_token3 = cr.register("org.pinenote.usb", |b| {
         // we use this signal to notify users of a cable connection
-        let usb_cable_connected = b.signal::<( ), _>("USBCableConnected", ()).msg_fn();
+        // let usb_cable_connected = b.signal::<( ), _>("USBCableConnected", ()).msg_fn();
 
         // this method is used to signal to the service
         b.method(
@@ -243,8 +288,6 @@ fn main() -> Result<(), Box<dyn Error>> {
                 Ok(())
             }
         );
-
-
 
     });
 

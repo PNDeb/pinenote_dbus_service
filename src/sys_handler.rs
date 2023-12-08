@@ -101,3 +101,14 @@ pub fn get_bw_mode() -> u8{
 pub fn set_bw_mode(new_mode: u8){
     write_ebc_file("bw_mode", new_mode);
 }
+
+pub fn get_dclk_select() ->u8 {
+    let dclk_select = read_ebc_file("dclk_select").parse::<u8>().unwrap();
+    return dclk_select;
+}
+
+pub fn set_dclk_select(new_mode: u8){
+    // todo: allowed values: -1, 0, 1
+    write_ebc_file("dclk_select", new_mode);
+}
+
