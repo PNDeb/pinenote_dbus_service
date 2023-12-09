@@ -289,6 +289,16 @@ fn main() -> Result<(), Box<dyn Error>> {
             }
         );
 
+        b.method(
+            "usb_gadget_disable_mtp",
+            (),
+            (),
+            move |_ctx: &mut Context, _hello: &mut EbcObject, ()| {
+                usb_modes::disable_mtp_gadget();
+                Ok(())
+            }
+        );
+
     });
 
     /* We need:
