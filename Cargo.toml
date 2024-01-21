@@ -14,7 +14,7 @@ description = "A DBus service for the Pine64 Pinenote"
 dbus = "0.9.6"
 dbus-crossroads = "0.5.1"
 libc = "0.2.137"
-nix = "0.25.0"
+nix = ">=0.25.0"
 
 # for Debian packaging (cargo deb -v)
 [package.metadata.deb]
