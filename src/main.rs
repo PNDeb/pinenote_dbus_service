@@ -11,8 +11,8 @@
  * dbus-send --system --print-reply --dest=org.pinenote.ebc /ebc org.pinenote.ebc.SetDefaultWaveform byte:2
  * dbus-send --print-reply --system --dest=org.pinenote.ebc /ebc org.pinenote.ebc.GetDefaultWaveform
  *
- * dbus-send --print-reply --system --dest=org.pinenote.pen /pen org.pinenote.pen.PenDoScan
- * dbus-send --print-reply --system --dest=org.pinenote.pen /pen org.pinenote.pen.PenSetAddress string:"ta:19:41:03:34:2b"
+ * dbus-send --print-reply --system --dest=org.pinenote.pen /pen org.pinenote.pen.DoScan
+ * dbus-send --print-reply --system --dest=org.pinenote.pen /pen org.pinenote.pen.SetAddress string:"ta:19:41:03:34:2b"
  * */
 use dbus::blocking::Connection;
 use dbus_crossroads::{Crossroads, Context};
@@ -27,6 +27,79 @@ mod usb_modes;
 struct EbcObject {
 }
 
+// check if a given string is a valid mac address for the BT pen
+fn check_mac(mac: String) -> bool {
+    let mut check: bool = true;
+
+    if mac.chars().count() != 17 {
+        check = false;
+    }
+
+    if mac.chars().nth(2) != Some(':') {
+        check = false;
+    }
+    if mac.chars().nth(5) != Some(':') {
+        check = false;
+    }
+    if mac.chars().nth(8) != Some(':') {
+        check = false;
+    }
+    if mac.chars().nth(11) != Some(':') {
+        check = false;
+    }
+
+    // TODO check the rest for valid hex values
+
+    return check;
+}
+
+fn pen_do_scan() -> Vec<String> {
+    let mut macs: Vec<String> = Vec::new();
+
+    println!("Initiating scan");
+    sys_handler::write_to_file(
+        "/sys/devices/platform/spi-gpio/spi_master/spi4/spi4.0/scan",
+        "1"
+    );
+    println!("Done");
+    // do we need to wait?
+    let scan_results = sys_handler::read_file(
+        "/sys/devices/platform/spi-gpio/spi_master/spi4/spi4.0/scan",
+    );
+    println!("Got results: |{}|. Scanning done", scan_results);
+    // let mut vec = Vec::new();
+    // vec.push(1);
+    // vec.push(2);
+    //
+    let mut lines = scan_results.lines();
+
+    // We always ignore the first two lines that are returned
+    lines.next();
+    lines.next();
+
+    // we expect only to macs after that
+    for line in lines {
+        if check_mac(line.to_string()) {
+            println!("MAC seems ok");
+            macs.push(line.to_string());
+        }
+    }
+    return macs;
+}
+
+fn pen_get_version() -> String {
+    let pen_version = sys_handler::read_file(
+        "/sys/devices/platform/spi-gpio/spi_master/spi4/spi4.0/pen_version");
+    println!("Current pen version is {}", pen_version);
+    return pen_version;
+}
+
+fn pen_get_battery() -> String {
+    let pen_battery = sys_handler::read_file(
+        "/sys/devices/platform/spi-gpio/spi_master/spi4/spi4.0/pen_battery");
+    println!("Current pen battery level is {}", pen_battery);
+    return pen_battery;
+}
 
 fn main() -> Result<(), Box<dyn Error>> {
     // Let's start by starting up a connection to the session bus and request a name.
@@ -227,7 +300,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let iface_token2 = cr.register("org.pinenote.pen", |b| {
         b.method(
-            "PenSetAddress",
+            "SetAddress",
             ("pen_address", ),
             ( ),
             move |_ctx: &mut Context, _dum: &mut EbcObject, (pen_address, ): (String, ) | {
@@ -242,23 +315,94 @@ fn main() -> Result<(), Box<dyn Error>> {
             }
         );
         b.method(
-            "PenDoScan",
+            "GetAddress",
+            ( ),
+            ("pen_address", ),
+            move |_ctx: &mut Context, _dum: &mut EbcObject, ( ) | {
+                println!("Returning current pen address");
+                let pen_address = sys_handler::read_file(
+                    "/sys/devices/platform/spi-gpio/spi_master/spi4/spi4.0/pen_address");
+                println!("Current pen address is {}", pen_address);
+
+                Ok((pen_address, ))
+            }
+        );
+        b.method(
+            "GetVersion",
+            ( ),
+            ("pen_version", ),
+            move |_ctx: &mut Context, _dum: &mut EbcObject, ( ) | {
+                println!("Returning pen version");
+                let pen_version = pen_get_version();
+
+                Ok((pen_version, ))
+            }
+        );
+        b.method(
+            "GetBattery",
+            ( ),
+            ("pen_battery", ),
+            move |_ctx: &mut Context, _dum: &mut EbcObject, ( ) | {
+                println!("Returning pen battery");
+                let pen_battery = pen_get_battery();
+
+                Ok((pen_battery, ))
+            }
+        );
+        b.method(
+            "ForgetAddress",
+            ( ),
+            ( ),
+            move |_ctx: &mut Context, _dum: &mut EbcObject, ( )| {
+                println!("Forgetting any registered address");
+                sys_handler::write_to_file(
+                    "/sys/devices/platform/spi-gpio/spi_master/spi4/spi4.0/pen_address",
+                    "00:00:00:00:00:00"
+                );
+
+                Ok(())
+            }
+        );
+        b.method(
+            "DoScan",
             (),
             ("scan_results", ),
             move |_ctx: &mut Context, _dum: &mut EbcObject, ( )| {
-                println!("Initiating scan");
-                sys_handler::write_to_file(
-                    "/sys/devices/platform/spi-gpio/spi_master/spi4/spi4.0/scan",
-                    "1"
-                );
-                println!("Done");
-                // do we need to wait?
-                let scan_results = sys_handler::read_file(
-                    "/sys/devices/platform/spi-gpio/spi_master/spi4/spi4.0/scan",
-                );
-                println!("Got results: |{}|", scan_results);
+                let macs = pen_do_scan();
 
-                Ok((scan_results, ))
+                Ok((macs, ))
+                // Ok((scan_results, ))
+                // Ok((vec![(3_u32, 4_i64, 5_u8)],))
+                //Ok((vec, ))
+            }
+        );
+        b.method(
+            "AutoConnect",
+            (),
+            ("success", ),
+            move |_ctx: &mut Context, _dum: &mut EbcObject, ( )| {
+                println!("Auto Connect starting");
+                println!("scanning...");
+                let macs = pen_do_scan();
+                println!("result count: {}", macs.len());
+                if macs.len() == 0 {
+                    return Ok((false, )) ;
+                }
+                println!("Setting pen address to: {}", macs[0]);
+                // take the first mac and set it
+                sys_handler::write_to_file(
+                    "/sys/devices/platform/spi-gpio/spi_master/spi4/spi4.0/pen_address",
+                    &macs[0].to_owned()
+                );
+                // try to get a version from the pen
+                let pen_version = pen_get_version();
+
+                if pen_version.chars().count() >= 1 {
+                    return Ok((true, ));
+                }
+                else {
+                    return Ok((false, ));
+                }
             }
         );
     });
