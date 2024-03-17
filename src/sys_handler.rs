@@ -20,9 +20,12 @@ pub fn read_file(filename : &str) -> String {
     let mut buf = String::new();
     let mut num_bytes = 1;
     while num_bytes > 0 {
-        num_bytes = reader.read_line(&mut buf).unwrap();
+        num_bytes = match reader.read_line(&mut buf){
+            Ok(line) => line,
+            Err(_error) => 0
+        }
     }
-    println!("buf: @{}@", buf);
+    //println!("buf: @{}@", buf);
 
     return buf.trim_end().to_string();
 }
