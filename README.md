@@ -66,9 +66,14 @@ For the impatient, here are a few dbus-send commands:
 
 	# initiate a scan for the stylus (buttons). Repeatedly push the buttons
 	# during the 12-20 seconds scan interval
-	dbus-send --print-reply --system --dest=org.pinenote.pen /pen org.pinenote.pen.PenDoScan
+	dbus-send --print-reply --system --dest=org.pinenote.pen /pen org.pinenote.pen.DoScan
+	dbus-send --print-reply --system --dest=org.pinenote.pen /pen org.pinenote.pen.AutoConnect
 	# connect to the mac address retrieved by the PenDoScan command
-	dbus-send --print-reply --system --dest=org.pinenote.pen /pen org.pinenote.pen.PenSetAddress string:"12:23:45:56:90:4b"
+	dbus-send --print-reply --system --dest=org.pinenote.pen /pen org.pinenote.pen.SetAddress string:"12:23:45:56:90:4b"
+	dbus-send --print-reply --system --dest=org.pinenote.pen /pen org.pinenote.pen.ForgetAddress
+	dbus-send --print-reply --system --dest=org.pinenote.pen /pen org.pinenote.pen.GetAddress
+	dbus-send --print-reply --system --dest=org.pinenote.pen /pen org.pinenote.pen.GetVersion
+	dbus-send --print-reply --system --dest=org.pinenote.pen /pen org.pinenote.pen.GetBattery
 
 # Some design choices that probably need revising
 
