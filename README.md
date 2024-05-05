@@ -75,6 +75,16 @@ For the impatient, here are a few dbus-send commands:
 	dbus-send --print-reply --system --dest=org.pinenote.pen /pen org.pinenote.pen.GetVersion
 	dbus-send --print-reply --system --dest=org.pinenote.pen /pen org.pinenote.pen.GetBattery
 
+    # travel mode
+    dbus-send --print-reply --system --dest=org.pinenote.misc /misc org.pinenote.pen.EnableTravelMode
+
+## Introspection
+
+    dbus-send --print-reply --system --dest=org.pinenote.ebc /ebc org.freedesktop.DBus.Introspectable.Introspect
+    dbus-send --print-reply --system --dest=org.pinenote.pen /pen org.freedesktop.DBus.Introspectable.Introspect
+    dbus-send --print-reply --system --dest=org.pinenote.usb /usb org.freedesktop.DBus.Introspectable.Introspect
+    dbus-send --print-reply --system --dest=org.pinenote.misc /misc org.freedesktop.DBus.Introspectable.Introspect
+
 # Some design choices that probably need revising
 
 * At this point getter/setter functions are mostly implemented using dbus
@@ -100,4 +110,4 @@ MIT dual licensed, following the licensing scheme of the dbus-rs project.
 Copyright of the dbus-rs project: (c) 2014-2018 David Henningsson
 <diwic@ubuntu.com> and other contributors
 
-Copyright of the rest: 2022 Maximilian Weigand <mweigand@mweigand.net>
+Copyright of the rest: 2022-2024 Maximilian Weigand <mweigand@mweigand.net>

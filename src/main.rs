@@ -107,6 +107,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     c.request_name("org.pinenote.ebc", false, true, false)?;
     c.request_name("org.pinenote.pen", false, true, false)?;
     c.request_name("org.pinenote.usb", false, true, false)?;
+    c.request_name("org.pinenote.misc", false, true, false)?;
 
     // Create a new crossroads instance.
     // The instance is configured so that introspection and properties interfaces
@@ -299,6 +300,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     });
 
     let iface_token2 = cr.register("org.pinenote.pen", |b| {
+        b.signal::<( ), _>("PenRegStatusChanged", ());
+
         b.method(
             "SetAddress",
             ("pen_address", ),
@@ -310,6 +313,9 @@ fn main() -> Result<(), Box<dyn Error>> {
                     &pen_address.to_owned()
                 );
                 println!("pen address set to {}", pen_address);
+
+                let signal_msg = _ctx.make_signal("PenRegStatusChanged", ());
+                _ctx.push_msg(signal_msg);
 
                 Ok(())
             }
@@ -360,7 +366,28 @@ fn main() -> Result<(), Box<dyn Error>> {
                     "00:00:00:00:00:00"
                 );
 
+                let signal_msg = _ctx.make_signal("PenRegStatusChanged", ());
+                _ctx.push_msg(signal_msg);
+
                 Ok(())
+            }
+        );
+        b.method(
+            "IsRegistered",
+            ( ),
+            ("pen_is_registered", ),
+            move |_ctx: &mut Context, _dum: &mut EbcObject, ( ) | {
+                println!("Checking if pen is registered");
+                let address = sys_handler::read_file(
+                    "/sys/devices/platform/spi-gpio/spi_master/spi4/spi4.0/pen_address");
+
+                let mut is_registered = false;
+
+                if address != "00:00:00:00:00:00" {
+                    is_registered = true;
+                }
+
+                Ok((is_registered, ))
             }
         );
         b.method(
@@ -396,6 +423,11 @@ fn main() -> Result<(), Box<dyn Error>> {
                 );
                 // try to get a version from the pen
                 let pen_version = pen_get_version();
+
+                // for now we emit the signal in any case, not sure if this should be clarified in
+                // the future
+                let signal_msg = _ctx.make_signal("PenRegStatusChanged", ());
+                _ctx.push_msg(signal_msg);
 
                 if pen_version.chars().count() >= 1 {
                     return Ok((true, ));
@@ -445,19 +477,48 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     });
 
-    /* We need:
-     *  activate usb-mtp
-     *  activate usb-network
-     *  activate usb-tablet mode
-     *  maybe: reset charge mode?
-     *
-     * */
+    let iface_token4 = cr.register("org.pinenote.misc", |b| {
+
+        b.method(
+            "EnableTravelMode",
+            (),
+            (),
+            move |_ctx: &mut Context, _hello: &mut EbcObject, ()| {
+                println!("Enabling travel mode");
+
+                // disable cover wakeup
+                sys_handler::write_to_file(
+                    "/sys/devices/platform/gpio-keys/power/wakeup",
+                    "disabled"
+                );
+                Ok(())
+            }
+        );
+
+        b.method(
+            "DisableTravelMode",
+            (),
+            (),
+            move |_ctx: &mut Context, _hello: &mut EbcObject, ()| {
+                println!("Disabling travel mode");
+
+                // enable cover wakeup
+                sys_handler::write_to_file(
+                    "/sys/devices/platform/gpio-keys/power/wakeup",
+                    "enabled"
+                );
+                Ok(())
+            }
+        );
+
+    });
 
     // Let's add the "/" path, which implements the com.example.dbustest interface,
     // to the crossroads instance.
     cr.insert("/ebc", &[iface_token], EbcObject{});
     cr.insert("/pen", &[iface_token2], EbcObject{});
     cr.insert("/usb", &[iface_token3], EbcObject{});
+    cr.insert("/misc", &[iface_token4], EbcObject{});
 
     // Serve clients forever.
     println!("Starting PineNote DBUS service");
