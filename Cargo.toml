@@ -1,6 +1,6 @@
 [package]
 name = "pinenote_dbus_service"
-version = "0.2.2-dev2"
+version = "0.2.2-dev3"
 edition = "2021"
 license = "Apache-2.0/MIT"
 authors = [
@@ -16,7 +16,7 @@ repository = "https://github.com/PNDeb/pinenote_dbus_service"
 dbus = ">=0.9.6"
 dbus-crossroads = ">=0.5.1"
 libc = "0.2.137"
-nix = ">=0.25.0"
+nix = { version = ">=0.27.0", features=["ioctl"] }
 
 # for Debian packaging (cargo deb -v)
 [package.metadata.deb]

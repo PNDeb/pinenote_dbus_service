@@ -1,0 +1,5 @@
+overlay = "./overlay_pinenote_dbus_service"
+
+[source]
+section = "rust"
+vcs_git = "https://github.com/PNDeb/pinenote_dbus_service"

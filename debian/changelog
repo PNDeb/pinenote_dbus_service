@@ -1,0 +1,5 @@
+rust-pinenote-dbus-service (0.2.2~dev3-1) trixie; urgency=medium
+
+  * Initial Debian version
+
+ -- Maximilian Weigand (PineNote Signing Key 4) <mweigand@mweigand.net>  Wed, 14 Aug 2024 21:25:05 +0200
