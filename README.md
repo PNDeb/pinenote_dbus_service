@@ -13,13 +13,14 @@ and uses the dbus-rs crate (https://github.com/diwic/dbus-rs).
 # Requirements and target platform
 
 This program is intended solely to run on the Pine64 Pinenote (arm64) and
-requires the ebc driver modifications from here to be present:
+requires the ebc driver modifications maintained in this repository:
 
-https://github.com/m-weigand/linux/tree/mw/rk35/ebc-drm-v5-modifications-t1
+https://github.com/m-weigand/linux
 
-These modifications are also merged in the user-usable kernel branch found here:
+A ready-to-use kernel branch for the Pinenote is, for example:
 
-https://github.com/m-weigand/linux/tree/mw/rk35/pinenote-next-t1
+https://github.com/m-weigand/linux/tree/branch_pinenote_6-9_v1
+
 
 # Compilation
 
@@ -99,6 +100,29 @@ For the impatient, here are a few dbus-send commands:
   for changing the bw_mode, leading to two refreshes when switching from
   grayscale to black/white+A2-waveform mode. Probably some kind of combined
   getter/setter-method+associated signal is the solution here.
+
+# Debian Packaging
+
+## The hard way: Via debcargo
+
+* git clone https://github.com/PNDeb/pinenote_dbus_service.git
+* cd pinenote_dbus_service
+* cd packaging_debian/
+* Packaging dbus-crossroads
+  (https://github.com/diwic/dbus-rs/blob/master/dbus-crossroads/), as of this
+  writing not part of Debian trixie:
+   * Check `cat overlay_crossroads/changelog` and adapt
+   * Execute:
+
+	   bash package_crossroads.sh
+       # we need crossroads installed in order to build the dbus service
+	   dpkg -i out_crossroads/*.deb
+
+* Packaging pinenote-dbus-service:
+	* Check and adapt: *overlay_pinenote_dbus_service/changelog*
+	* Execute:
+
+		package_pinenote_dbus_service.sh
 
 # License/Copying
 
