@@ -114,15 +114,15 @@ For the impatient, here are a few dbus-send commands:
    * Check `cat overlay_crossroads/changelog` and adapt
    * Execute:
 
-	   bash package_crossroads.sh
-       # we need crossroads installed in order to build the dbus service
-	   dpkg -i out_crossroads/*.deb
+         bash package_crossroads.sh
+         # we need crossroads installed in order to build the dbus service
+         dpkg -i out_crossroads/*.deb
 
 * Packaging pinenote-dbus-service:
 	* Check and adapt: *overlay_pinenote_dbus_service/changelog*
 	* Execute:
 
-		package_pinenote_dbus_service.sh
+          package_pinenote_dbus_service.sh
 
 # License/Copying
 
