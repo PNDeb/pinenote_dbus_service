@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
+pwd_save=$PWD
 outdir="package_pinenote_dbus_service"
 test -d "${outdir}" && rm -r "${outdir}"
 mkdir "${outdir}"
