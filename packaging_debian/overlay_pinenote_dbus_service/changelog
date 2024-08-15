@@ -1,4 +1,4 @@
-rust-pinenote-dbus-service (0.2.2~dev3-1) trixie; urgency=medium
+rust-pinenote-dbus-service (0.2.2~dev4-1) trixie; urgency=medium
 
   * Initial Debian version
 

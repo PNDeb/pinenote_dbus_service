@@ -1,0 +1,6 @@
+rust-dbus-crossroads (0.5.2-1) trixie; urgency=medium
+
+  * Team upload.
+  * Package dbus-crossroads 0.5.2 from crates.io using debcargo 2.6.1
+
+ -- Maximilian Weigand <mweigand@mweigand.net>  Thu, 15 Aug 2024 18:21:24 +0000
