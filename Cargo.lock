@@ -69,7 +69,7 @@ dependencies = [
 
 [[package]]
 name = "pinenote_dbus_service"
-version = "0.2.2-dev4"
+version = "0.2.2-dev5"
 dependencies = [
  "dbus",
  "dbus-crossroads",
