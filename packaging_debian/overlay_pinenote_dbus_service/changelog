@@ -1,9 +1,8 @@
-rust-pinenote-dbus-service (0.2.2~dev5) trixie; urgency=medium
+rust-pinenote-dbus-service (0.2.2~dev5-1) trixie; urgency=medium
 
   * Mostly packaging details
 
- -- Maximilian Weigand (PineNote Signing Key 4) <mweigand@mweigand.net>  So, 25 Aug 2024 19:41:13 +0200
-
+ -- Maximilian Weigand (PineNote Signing Key 4) <mweigand@mweigand.net>  Sun, 25 Aug 2024 21:25:05 +0200
 
 rust-pinenote-dbus-service (0.2.2~dev4-1) trixie; urgency=medium
 

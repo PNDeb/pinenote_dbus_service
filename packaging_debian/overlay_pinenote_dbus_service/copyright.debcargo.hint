@@ -26,10 +26,37 @@ Comment:
  FIXME (overlay): These notices are extracted from files. Please review them
  before uploading to the archive.
 
-Files: packaging_debian/overlay_pinenote_dbus_service/copyright
+Files: packaging_debian/overlay_crossroads/copyright
+Copyright:
+ 2014-2018 David Henningsson <diwic@ubuntu.com>
+ 2024 Debian Rust Maintainers <pkg-rust-maintainers@alioth-lists.debian.net>
+License: UNKNOWN-LICENSE; FIXME (overlay)
+Comment:
+ FIXME (overlay): These notices are extracted from files. Please review them
+ before uploading to the archive.
+
+Files: packaging_debian/overlay_crossroads/copyright.debcargo.hint
 Copyright:
  2014-2018 David Henningsson <diwic@ubuntu.com> and other contributors
  2014-2018 David Henningsson <diwic@ubuntu.com> and other contributors
+ 2024 Debian Rust Maintainers <pkg-rust-maintainers@alioth-lists.debian.net>
+License: UNKNOWN-LICENSE; FIXME (overlay)
+Comment:
+ FIXME (overlay): These notices are extracted from files. Please review them
+ before uploading to the archive.
+
+Files: packaging_debian/overlay_pinenote_dbus_service/copyright
+Copyright: 2014-2018 David Henningsson diwic@ubuntu.com and other contributors
+License: UNKNOWN-LICENSE; FIXME (overlay)
+Comment:
+ FIXME (overlay): These notices are extracted from files. Please review them
+ before uploading to the archive.
+
+Files: packaging_debian/overlay_pinenote_dbus_service/copyright.debcargo.hint
+Copyright:
+ 2014-2018 David Henningsson <diwic@ubuntu.com> and other contributors
+ 2014-2018 David Henningsson <diwic@ubuntu.com> and other contributors
+ 2024 Debian Rust Maintainers <pkg-rust-maintainers@alioth-lists.debian.net>
 License: UNKNOWN-LICENSE; FIXME (overlay)
 Comment:
  FIXME (overlay): These notices are extracted from files. Please review them
