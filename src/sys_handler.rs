@@ -28,7 +28,7 @@ pub fn read_file(filename : &str) -> String {
 }
 
 fn read_ebc_file(parameter : &str) -> String {
-    let parameter_file = "/sys/module/rockchip_ebc/parameters/".to_owned() + &parameter;
+    let parameter_file = format!("/sys/module/rockchip_ebc/parameters/{parameter}");
     let file = OpenOptions::new().read(true)
          .open(parameter_file).expect("Error opening the file");
     let mut reader = BufReader::new(file);
@@ -39,7 +39,7 @@ fn read_ebc_file(parameter : &str) -> String {
 }
 
 fn write_ebc_file(parameter : &str, new_value : u8) {
-    let device = "/sys/module/rockchip_ebc/parameters/".to_owned() + &parameter;
+    let device = format!("/sys/module/rockchip_ebc/parameters/{parameter}");
     let file = OpenOptions::new().write(true)
          .open(device).expect("Error opening the file");
 
