@@ -70,14 +70,7 @@ pub fn get_auto_refresh() -> bool{
     // let read_result = file.read_exact(&mut state).expect("Reading failed");
     // // state as bool
     // true
-    let bstate : bool;
-    if state[0] == 0 {
-        bstate = false;
-    }
-    else {
-        bstate = true;
-    }
-    bstate
+    state[0] != 0
 }
 
 pub fn set_default_waveform(waveform: u8) {
