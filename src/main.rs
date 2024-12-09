@@ -412,7 +412,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                 println!("scanning...");
                 let macs = pen_do_scan();
                 println!("result count: {}", macs.len());
-                if macs.len() == 0 {
+                if macs.is_empty() {
                     return Ok((false, )) ;
                 }
                 println!("Setting pen address to: {}", macs[0]);
