@@ -80,7 +80,7 @@ pub fn get_auto_refresh() -> bool{
     else {
         bstate = true;
     }
-    return bstate;
+    bstate
 }
 
 pub fn set_default_waveform(waveform: u8) {
@@ -92,13 +92,11 @@ pub fn set_default_waveform(waveform: u8) {
 }
 
 pub fn get_default_waveform() -> u8{
-    let waveform_u8 = read_ebc_file("default_waveform").parse::<u8>().unwrap();
-    return waveform_u8;
+   read_ebc_file("default_waveform").parse::<u8>().unwrap()
 }
 
 pub fn get_bw_mode() -> u8{
-    let bw_mode = read_ebc_file("bw_mode").parse::<u8>().unwrap();
-    return bw_mode;
+    read_ebc_file("bw_mode").parse::<u8>().unwrap()
 }
 
 pub fn set_bw_mode(new_mode: u8){
@@ -106,8 +104,7 @@ pub fn set_bw_mode(new_mode: u8){
 }
 
 pub fn get_dclk_select() ->u8 {
-    let dclk_select = read_ebc_file("dclk_select").parse::<u8>().unwrap();
-    return dclk_select;
+    read_ebc_file("dclk_select").parse::<u8>().unwrap()
 }
 
 pub fn set_dclk_select(new_mode: u8){
