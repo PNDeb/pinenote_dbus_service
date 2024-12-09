@@ -26,7 +26,6 @@ int main()
 
  *
  * */
-use libc;
 use std::{
     fs::OpenOptions,
     os::unix::{fs::OpenOptionsExt, io::AsRawFd},
