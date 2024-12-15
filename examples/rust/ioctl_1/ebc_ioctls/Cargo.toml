@@ -1,0 +1,8 @@
+[package]
+name = "ebc_ioctls"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+nix = { version = ">=0.27.0", features=["ioctl"] }
+libc = {version = ">0.2.137"}
