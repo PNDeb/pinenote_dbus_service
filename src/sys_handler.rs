@@ -20,10 +20,7 @@ pub fn read_file(filename : &str) -> String {
     let mut buf = String::new();
     let mut num_bytes = 1;
     while num_bytes > 0 {
-        num_bytes = match reader.read_line(&mut buf){
-            Ok(line) => line,
-            Err(_error) => 0
-        }
+        num_bytes = reader.read_line(&mut buf).unwrap_or_default();
     }
     //println!("buf: @{}@", buf);
 
@@ -31,7 +28,7 @@ pub fn read_file(filename : &str) -> String {
 }
 
 fn read_ebc_file(parameter : &str) -> String {
-    let parameter_file = "/sys/module/rockchip_ebc/parameters/".to_owned() + &parameter;
+    let parameter_file = format!("/sys/module/rockchip_ebc/parameters/{parameter}");
     let file = OpenOptions::new().read(true)
          .open(parameter_file).expect("Error opening the file");
     let mut reader = BufReader::new(file);
@@ -42,7 +39,7 @@ fn read_ebc_file(parameter : &str) -> String {
 }
 
 fn write_ebc_file(parameter : &str, new_value : u8) {
-    let device = "/sys/module/rockchip_ebc/parameters/".to_owned() + &parameter;
+    let device = format!("/sys/module/rockchip_ebc/parameters/{parameter}");
     let file = OpenOptions::new().write(true)
          .open(device).expect("Error opening the file");
 
@@ -73,14 +70,7 @@ pub fn get_auto_refresh() -> bool{
     // let read_result = file.read_exact(&mut state).expect("Reading failed");
     // // state as bool
     // true
-    let bstate : bool;
-    if state[0] == 0 {
-        bstate = false;
-    }
-    else {
-        bstate = true;
-    }
-    return bstate;
+    state[0] != 0
 }
 
 pub fn set_default_waveform(waveform: u8) {
@@ -92,13 +82,11 @@ pub fn set_default_waveform(waveform: u8) {
 }
 
 pub fn get_default_waveform() -> u8{
-    let waveform_u8 = read_ebc_file("default_waveform").parse::<u8>().unwrap();
-    return waveform_u8;
+   read_ebc_file("default_waveform").parse::<u8>().unwrap()
 }
 
 pub fn get_bw_mode() -> u8{
-    let bw_mode = read_ebc_file("bw_mode").parse::<u8>().unwrap();
-    return bw_mode;
+    read_ebc_file("bw_mode").parse::<u8>().unwrap()
 }
 
 pub fn set_bw_mode(new_mode: u8){
@@ -106,8 +94,7 @@ pub fn set_bw_mode(new_mode: u8){
 }
 
 pub fn get_dclk_select() ->u8 {
-    let dclk_select = read_ebc_file("dclk_select").parse::<u8>().unwrap();
-    return dclk_select;
+    read_ebc_file("dclk_select").parse::<u8>().unwrap()
 }
 
 pub fn set_dclk_select(new_mode: u8){

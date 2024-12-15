@@ -50,7 +50,7 @@ fn check_mac(mac: String) -> bool {
 
     // TODO check the rest for valid hex values
 
-    return check;
+    check
 }
 
 fn pen_do_scan() -> Vec<String> {
@@ -84,21 +84,21 @@ fn pen_do_scan() -> Vec<String> {
             macs.push(line.to_string());
         }
     }
-    return macs;
+    macs
 }
 
 fn pen_get_version() -> String {
     let pen_version = sys_handler::read_file(
         "/sys/devices/platform/spi-gpio/spi_master/spi4/spi4.0/pen_version");
     println!("Current pen version is {}", pen_version);
-    return pen_version;
+    pen_version
 }
 
 fn pen_get_battery() -> String {
     let pen_battery = sys_handler::read_file(
         "/sys/devices/platform/spi-gpio/spi_master/spi4/spi4.0/pen_battery");
     println!("Current pen battery level is {}", pen_battery);
-    return pen_battery;
+    pen_battery
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
@@ -412,7 +412,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                 println!("scanning...");
                 let macs = pen_do_scan();
                 println!("result count: {}", macs.len());
-                if macs.len() == 0 {
+                if macs.is_empty() {
                     return Ok((false, )) ;
                 }
                 println!("Setting pen address to: {}", macs[0]);
@@ -430,10 +430,10 @@ fn main() -> Result<(), Box<dyn Error>> {
                 _ctx.push_msg(signal_msg);
 
                 if pen_version.chars().count() >= 1 {
-                    return Ok((true, ));
+                    Ok((true, ))
                 }
                 else {
-                    return Ok((false, ));
+                    Ok((false, ))
                 }
             }
         );
