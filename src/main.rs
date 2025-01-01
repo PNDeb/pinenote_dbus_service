@@ -121,6 +121,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         // // The msg_fn returns a boxed function, which when called constructs the message to be emitted.
         let waveform_changed = b.signal::<( ), _>("WaveformChanged", ()).msg_fn();
         let bwmode_changed = b.signal::<( ), _>("BwModeChanged", ()).msg_fn();
+        let nooffscreen_changed = b.signal::<( ), _>("NoOffScreenChanged", ()).msg_fn();
         let request_quality_or_performance_mode = b.signal::<(u8, ), _>("ReqQualityOrPerformance", ("requested_mode", )).msg_fn();
 
         // we need setters/getters for:
@@ -208,6 +209,30 @@ fn main() -> Result<(), Box<dyn Error>> {
             ("current_mode", ),
             move |_ctx: &mut Context, _dum: &mut EbcObject, ( )| {
                 let ret_value = sys_handler::get_bw_mode();
+
+                Ok((ret_value, ))
+            }
+        );
+
+        b.method(
+            "SetNoOffScreen",
+            ("new_mode", ),
+            (),
+            move |_ctx: &mut Context, _dum: &mut EbcObject, (new_mode, ): (u8, )| {
+                sys_handler::set_no_off_screen(new_mode);
+                let signal_msg = nooffscreen_changed(_ctx.path(), &());
+                _ctx.push_msg(signal_msg);
+
+                Ok(())
+            }
+        );
+
+        b.method(
+            "GetNoOffScreen",
+            (),
+            ("current_mode", ),
+            move |_ctx: &mut Context, _dum: &mut EbcObject, ( )| {
+                let ret_value = sys_handler::get_no_off_screen();
 
                 Ok((ret_value, ))
             }

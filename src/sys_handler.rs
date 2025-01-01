@@ -93,6 +93,14 @@ pub fn set_bw_mode(new_mode: u8){
     write_ebc_file("bw_mode", new_mode);
 }
 
+pub fn get_no_off_screen() -> u8{
+    read_ebc_file("no_off_screen").parse::<u8>().unwrap()
+}
+
+pub fn set_no_off_screen(new_mode: u8){
+    write_ebc_file("no_off_screen", new_mode);
+}
+
 pub fn get_dclk_select() ->u8 {
     read_ebc_file("dclk_select").parse::<u8>().unwrap()
 }
