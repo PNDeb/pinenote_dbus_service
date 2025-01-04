@@ -11,6 +11,15 @@ repository = "https://github.com/PNDeb/pinenote_dbus_service"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[[bin]]
+name = "pn_trigger_global_refresh"
+
+[[bin]]
+name = "pn_enter_writing_mode"
+
+[[bin]]
+name = "pn_quit_writing_mode"
+
 [dependencies]
 # cargo-deb = "2.1.0"
 dbus = ">=0.9.6"
@@ -24,6 +33,9 @@ maintainer = "Maximilian Weigand <mweigand@mweigand.net>"
 maintainer-scripts = "debian/"
 systemd-units = { start = true, enable=true, unit-scripts= "systemd_units/"}
 assets = [
-    ["target/release/pinenote_dbus_service", "usr/bin/", "755"],
+	["target/release/pinenote_dbus_service", "usr/bin/", "755"],
+	["target/release/pn_trigger_global_refresh", "usr/bin/", "755"],
+	["target/release/pn_enter_writing_mode", "usr/bin/", "755"],
+	["target/release/pn_quit_writing_mode", "usr/bin/", "755"],
 	["dbus_security_configuration/pinenote.conf", "/etc/dbus-1/system.d/pinenote.conf",  "644"],
 ]

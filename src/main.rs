@@ -13,14 +13,36 @@
  *
  * dbus-send --print-reply --system --dest=org.pinenote.pen /pen org.pinenote.pen.DoScan
  * dbus-send --print-reply --system --dest=org.pinenote.pen /pen org.pinenote.pen.SetAddress string:"ta:19:41:03:34:2b"
+ * dbus-send --system --print-reply --dest=org.pinenote.ebc /ebc org.pinenote.ebc.EnterWritingMode
  * */
 use dbus::blocking::Connection;
 use dbus_crossroads::{Crossroads, Context};
 use std::error::Error;
+use std::sync::Mutex;
 
 mod ebc_ioctl;
 mod sys_handler;
 mod usb_modes;
+
+// WritingState
+struct EbcWritingState {
+    writing_mode_is_on: u8,
+    waveform: u8,
+    split_area_limit: u32,
+    ebc_energy_saving: u8,
+}
+
+static STATE_WRITING: Mutex<EbcWritingState> =
+    Mutex::new(
+        EbcWritingState{
+            // this is the only interesting value here - the rest will be set
+            // when the mode is turned on for the first time
+            writing_mode_is_on: 0u8,
+            waveform:0u8,
+            split_area_limit: 0u32,
+            ebc_energy_saving: 0u8
+        }
+    );
 
 // This is the object that we are going to store inside the crossroads instance and that will be
 // provided to all methods
@@ -123,6 +145,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         let bwmode_changed = b.signal::<( ), _>("BwModeChanged", ()).msg_fn();
         let nooffscreen_changed = b.signal::<( ), _>("NoOffScreenChanged", ()).msg_fn();
         let request_quality_or_performance_mode = b.signal::<(u8, ), _>("ReqQualityOrPerformance", ("requested_mode", )).msg_fn();
+        let delay_a_changed = b.signal::<( ), _>("DelayAChanged", ()).msg_fn();
+        let split_area_limit_changed = b.signal::<( ), _>("SplitAreaLimitChanged", ()).msg_fn();
 
         // we need setters/getters for:
         // auto_refresh
@@ -185,6 +209,54 @@ fn main() -> Result<(), Box<dyn Error>> {
             ("current_waveform", ),
             move |_ctx: &mut Context, _dum: &mut EbcObject, ( )| {
                 let ret_value = sys_handler::get_default_waveform();
+
+                Ok((ret_value, ))
+            }
+        );
+
+        b.method(
+            "SetSplitAreaLimit",
+            ("split_limit", ),
+            (),
+            move |_ctx: &mut Context, _dum: &mut EbcObject, (split_limit, ): (u32, )| {
+                sys_handler::set_split_area_limit(split_limit);
+                let signal_msg = split_area_limit_changed(_ctx.path(), &());
+                _ctx.push_msg(signal_msg);
+
+                Ok(())
+            }
+        );
+
+        b.method(
+            "GetSplitAreaLimit",
+            (),
+            ("splt_limit", ),
+            move |_ctx: &mut Context, _dum: &mut EbcObject, ( )| {
+                let ret_value = sys_handler::get_split_area_limit();
+
+                Ok((ret_value, ))
+            }
+        );
+
+        b.method(
+            "SetDelayA",
+            ("delay", ),
+            (),
+            move |_ctx: &mut Context, _dum: &mut EbcObject, (delay, ): (u32, )| {
+                sys_handler::set_delay_a(delay);
+                let signal_msg = delay_a_changed(_ctx.path(), &());
+                _ctx.push_msg(signal_msg);
+
+                Ok(())
+            }
+        );
+
+        b.method(
+            "GetDelayA",
+            (),
+            ("delay", ),
+            move |_ctx: &mut Context, _dum: &mut EbcObject, ( )| {
+                let ret_value = sys_handler::get_delay_a();
 
                 Ok((ret_value, ))
             }
@@ -298,6 +370,79 @@ fn main() -> Result<(), Box<dyn Error>> {
                         _ctx.push_msg(signal_msg);
                     },
                     _ => println!("Got a request for an unknown performance mode"),
+
+                }
+
+                Ok(())
+            }
+        );
+
+        b.method(
+            "EnterWritingMode",
+            (),
+            (),
+            move |_ctx: &mut Context, _dum: &mut EbcObject, ()| {
+                println!("EnterWritingMode");
+                if let Ok(mut writing_state) = STATE_WRITING.lock() {
+                    println!("EnterWritingMode: Got lock");
+
+                    if writing_state.writing_mode_is_on == 1 {
+                        println!("Writing mode is already on - doing nothing");
+                    } else {
+                        println!("Writing mode is off - switching on");
+
+                        // store current state
+                        writing_state.waveform = sys_handler::get_default_waveform();
+                        writing_state.split_area_limit = sys_handler::get_split_area_limit();
+                        let energy = sys_handler::read_ebc_energy_control();
+                        if energy == "on"
+                        {
+                            writing_state.ebc_energy_saving = 1;
+                        } else {
+                            writing_state.ebc_energy_saving = 0;
+                        }
+                        // turn off runtime-suspend
+                        // enable BW
+                        // note: we do not touch Q/P modes, as those require a mode switch
+                        // now set up everything for writing
+                        sys_handler::set_default_waveform(1);
+                        sys_handler::set_split_area_limit(8);
+                        sys_handler::write_ebc_energy_control("on");
+
+                        writing_state.writing_mode_is_on = 1;
+                    }
+
+                }
+
+                Ok(())
+            }
+        );
+
+        b.method(
+            "QuitWritingMode",
+            (),
+            (),
+            move |_ctx: &mut Context, _dum: &mut EbcObject, ()| {
+                println!("QuitWritingMode");
+                if let Ok(mut writing_state) = STATE_WRITING.lock() {
+                    println!("QuitWritingMode: Got lock");
+
+                    if writing_state.writing_mode_is_on == 1 {
+                        println!("Writing mode is on - turning off");
+                        // reset parameters
+                        sys_handler::set_default_waveform(writing_state.waveform);
+                        sys_handler::set_split_area_limit(writing_state.split_area_limit);
+                        if writing_state.ebc_energy_saving == 1
+                        {
+                            sys_handler::write_ebc_energy_control("on");
+                        } else {
+                            sys_handler::write_ebc_energy_control("auto");
+                        }
+
+                        writing_state.writing_mode_is_on = 0;
+                    } else {
+                        println!("Writing mode is off - doing nothing");
+                    }
 
                 }
 
@@ -538,8 +683,6 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     });
 
-    // Let's add the "/" path, which implements the com.example.dbustest interface,
-    // to the crossroads instance.
     cr.insert("/ebc", &[iface_token], EbcObject{});
     cr.insert("/pen", &[iface_token2], EbcObject{});
     cr.insert("/usb", &[iface_token3], EbcObject{});
