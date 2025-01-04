@@ -46,6 +46,34 @@ fn write_ebc_file(parameter : &str, new_value : u8) {
     write!(&file, "{}", new_value).unwrap();
 }
 
+fn write_ebc_file_u32(parameter : &str, new_value : u32) {
+    let device = format!("/sys/module/rockchip_ebc/parameters/{parameter}");
+    let file = OpenOptions::new().write(true)
+         .open(device).expect("Error opening the file");
+
+    write!(&file, "{}", new_value).unwrap();
+}
+
+pub fn write_ebc_energy_control(new_value : &str) {
+    // write: allow only values "on" and "auto"
+    let device = format!("/sys/devices/platform/fdec0000.ebc/power/control");
+    let file = OpenOptions::new().write(true)
+         .open(device).expect("Error opening the file");
+
+    write!(&file, "{}", new_value).unwrap();
+}
+
+pub fn read_ebc_energy_control() -> String {
+    let parameter_file = format!("/sys/devices/platform/fdec0000.ebc/power/control");
+    let file = OpenOptions::new().read(true)
+         .open(parameter_file).expect("Error opening the file");
+    let mut reader = BufReader::new(file);
+    let mut buf = String::new();
+    let _num_bytes = reader.read_line(&mut buf).unwrap();
+
+    return buf.trim_end().to_string();
+}
+
 /************************************************************************/
 
 pub fn set_auto_refresh(state: bool) {
@@ -71,6 +99,30 @@ pub fn get_auto_refresh() -> bool{
     // // state as bool
     // true
     state[0] != 0
+}
+
+pub fn get_bw_dither_invert() -> u8{
+    read_ebc_file("bw_dither_invert").parse::<u8>().unwrap()
+}
+
+pub fn set_bw_dither_invert(new_mode: u8){
+    write_ebc_file("bw_dither_invert", new_mode);
+}
+
+pub fn get_delay_a() -> u32{
+    read_ebc_file("delay_a").parse::<u32>().unwrap()
+}
+
+pub fn set_delay_a(new_mode: u32){
+    write_ebc_file_u32("delay_a", new_mode);
+}
+
+pub fn get_split_area_limit() -> u32{
+    read_ebc_file("split_area_limit").parse::<u32>().unwrap()
+}
+
+pub fn set_split_area_limit(new_mode: u32){
+    write_ebc_file_u32("split_area_limit", new_mode);
 }
 
 pub fn set_default_waveform(waveform: u8) {
@@ -110,3 +162,29 @@ pub fn set_dclk_select(new_mode: u8){
     write_ebc_file("dclk_select", new_mode);
 }
 
+/*
+* [x] auto_refresh
+* [x] bw_dither_invert
+* [ ] bw_mode
+* [ ] bw_threshold
+* [x] dclk_select
+* [x] default_waveform
+* [x] delay_a
+* [ ] delay_b
+* [ ] delay_c
+* [ ] diff_mode
+* [ ] direct_mode
+* [ ] fourtone_hi_threshold
+* [ ] fourtone_low_threshold
+* [ ] fourtone_mid_threshold
+* [ ] hskew_override
+* [ ] limit_fb_blits
+* [x] no_off_screen
+* [ ] panel_reflection
+* [ ] prepare_prev_before_a2
+* [ ] refresh_threshold
+* [ ] refresh_waveform
+* [ ] skip_reset
+* [x] split_area_limit
+* [ ] temp_override
+*/
