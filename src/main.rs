@@ -19,6 +19,10 @@ use dbus::blocking::Connection;
 use dbus_crossroads::{Crossroads, Context};
 use std::error::Error;
 use std::sync::Mutex;
+use std::fs::File;
+use std::io::Read;
+use std::io::ErrorKind;
+
 
 mod ebc_ioctl;
 mod sys_handler;
@@ -263,6 +267,30 @@ fn main() -> Result<(), Box<dyn Error>> {
         );
 
         b.method(
+            "SetBwDitherInvert",
+            ("new_mode", ),
+            (),
+            move |_ctx: &mut Context, _dum: &mut EbcObject, (new_mode, ): (u8, )| {
+                sys_handler::set_bw_dither_invert(new_mode);
+                // let signal_msg = bwmode_changed(_ctx.path(), &());
+                // _ctx.push_msg(signal_msg);
+
+                Ok(())
+            }
+        );
+
+        b.method(
+            "GetBwDitherInvert",
+            (),
+            ("current_mode", ),
+            move |_ctx: &mut Context, _dum: &mut EbcObject, ( )| {
+                let ret_value = sys_handler::get_bw_dither_invert();
+
+                Ok((ret_value, ))
+            }
+        );
+
+        b.method(
             "SetBwMode",
             ("new_mode", ),
             (),
@@ -466,6 +494,46 @@ fn main() -> Result<(), Box<dyn Error>> {
             }
         );
 
+        b.method(
+            "SetOfflineScreenFromFileTemporary",
+            ("filename", ),
+            ( ),
+            move |_ctx: &mut Context, _dum: &mut EbcObject, (filename, ): (String, ) | {
+                println!("Setting temporary offscreen");
+
+                let f = File::open(filename);
+                match f {
+                    Ok(mut f) => {
+                        println!("File opening successful");
+                        // let mut buffer = [0; 1872 * 1404 / 2];
+                        let mut buffer = vec![0; 1314144];
+
+                        // read exactly 10 bytes
+                        let read_result = f.read_exact(&mut buffer);
+                        match read_result {
+                            Ok(_read_reasult) => {
+                                println!("Read successful - setting offline content");
+                                ebc_ioctl::set_offline_screen(&buffer);
+
+                            },
+                            Err(_e) => {
+                                println!("Read not successful");
+                            }
+                        };
+                    },
+                    Err(e) => {
+                        if e.kind() == ErrorKind::NotFound {
+                            println!("Offscreen file not found!");
+                        }
+                    }
+                };
+
+                // let signal_msg = _ctx.make_signal("PenRegStatusChanged", ());
+                // _ctx.push_msg(signal_msg);
+
+                Ok(())
+            }
+        );
 
     });
 
@@ -490,6 +558,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                 Ok(())
             }
         );
+
         b.method(
             "GetAddress",
             ( ),

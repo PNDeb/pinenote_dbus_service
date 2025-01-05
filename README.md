@@ -19,8 +19,7 @@ https://github.com/m-weigand/linux
 
 A ready-to-use kernel branch for the Pinenote is, for example:
 
-https://github.com/m-weigand/linux/tree/branch_pinenote_6-9_v1
-
+https://github.com/m-weigand/linux/tree/branch_pinenote_6-12_v1
 
 # Compilation
 
@@ -78,6 +77,9 @@ For the impatient, here are a few dbus-send commands:
 
     # travel mode
     dbus-send --print-reply --system --dest=org.pinenote.misc /misc org.pinenote.pen.EnableTravelMode
+
+    # set off-screen content (temporary)
+    dbus-send --print-reply --system --dest=org.pinenote.ebc /ebc org.pinenote.ebc.SetOfflineScreenFromFileTemporary string:"/lib/firmware/rockchip/rockchip_ebc_default_screen.bin"
 
 ## Introspection
 
