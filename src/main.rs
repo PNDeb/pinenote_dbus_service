@@ -145,10 +145,13 @@ fn main() -> Result<(), Box<dyn Error>> {
         // // This row advertises (when introspected) that we can send a HelloHappened signal.
         // // We use the single-tuple to say that we have one single argument, named "sender" of type "String".
         // // The msg_fn returns a boxed function, which when called constructs the message to be emitted.
+        let auto_refresh_changed = b.signal::<( ), _>("AutoRefreshChanged", ()).msg_fn();
+        let bw_mode_changed = b.signal::<( ), _>("BwModeChanged", ()).msg_fn();
+        let bw_dither_invert_changed = b.signal::<( ), _>("BwDitherInvertChanged", ()).msg_fn();
+        let dclk_select_changed = b.signal::<( ), _>("DclkSelectChanged", ()).msg_fn();
         let waveform_changed = b.signal::<( ), _>("WaveformChanged", ()).msg_fn();
-        let bwmode_changed = b.signal::<( ), _>("BwModeChanged", ()).msg_fn();
-        let nooffscreen_changed = b.signal::<( ), _>("NoOffScreenChanged", ()).msg_fn();
-        let request_quality_or_performance_mode = b.signal::<(u8, ), _>("ReqQualityOrPerformance", ("requested_mode", )).msg_fn();
+        let no_off_screen_changed = b.signal::<( ), _>("NoOffScreenChanged", ()).msg_fn();
+        let requested_quality_or_performance_mode = b.signal::<(u8, ), _>("RequestedQualityOrPerformance", ("requested_mode", )).msg_fn();
         let delay_a_changed = b.signal::<( ), _>("DelayAChanged", ()).msg_fn();
         let split_area_limit_changed = b.signal::<( ), _>("SplitAreaLimitChanged", ()).msg_fn();
 
@@ -194,25 +197,11 @@ fn main() -> Result<(), Box<dyn Error>> {
         );
 
         b.method(
-            "SetDefaultWaveform",
-            ("waveform", ),
+            "GetSplitAreaLimit",
             (),
-            move |_ctx: &mut Context, _dum: &mut EbcObject, (waveform, ): (u8, )| {
-                sys_handler::set_default_waveform(waveform);
-                // emit the signal
-                let signal_msg = waveform_changed(_ctx.path(), &());
-                _ctx.push_msg(signal_msg);
-
-                Ok(())
-            }
-        );
-
-        b.method(
-            "GetDefaultWaveform",
-            (),
-            ("current_waveform", ),
+            ("splt_limit", ),
             move |_ctx: &mut Context, _dum: &mut EbcObject, ( )| {
-                let ret_value = sys_handler::get_default_waveform();
+                let ret_value = sys_handler::get_split_area_limit();
 
                 Ok((ret_value, ))
             }
@@ -232,11 +221,11 @@ fn main() -> Result<(), Box<dyn Error>> {
         );
 
         b.method(
-            "GetSplitAreaLimit",
+            "GetDelayA",
             (),
-            ("splt_limit", ),
+            ("delay", ),
             move |_ctx: &mut Context, _dum: &mut EbcObject, ( )| {
-                let ret_value = sys_handler::get_split_area_limit();
+                let ret_value = sys_handler::get_delay_a();
 
                 Ok((ret_value, ))
             }
@@ -256,47 +245,34 @@ fn main() -> Result<(), Box<dyn Error>> {
         );
 
         b.method(
-            "GetDelayA",
+            "GetAutoRefresh",
             (),
-            ("delay", ),
+            ("state_auto_refresh", ),
             move |_ctx: &mut Context, _dum: &mut EbcObject, ( )| {
-                let ret_value = sys_handler::get_delay_a();
+                let ret_value = sys_handler::get_auto_refresh();
 
                 Ok((ret_value, ))
             }
         );
-
+        // DEPRECATED
         b.method(
-            "SetBwDitherInvert",
-            ("new_mode", ),
+            "GetAutorefresh",
             (),
-            move |_ctx: &mut Context, _dum: &mut EbcObject, (new_mode, ): (u8, )| {
-                sys_handler::set_bw_dither_invert(new_mode);
-                // let signal_msg = bwmode_changed(_ctx.path(), &());
-                // _ctx.push_msg(signal_msg);
-
-                Ok(())
-            }
-        );
-
-        b.method(
-            "GetBwDitherInvert",
-            (),
-            ("current_mode", ),
+            ("state_autorefresh", ),
             move |_ctx: &mut Context, _dum: &mut EbcObject, ( )| {
-                let ret_value = sys_handler::get_bw_dither_invert();
+                let ret_value = sys_handler::get_auto_refresh();
 
                 Ok((ret_value, ))
             }
-        );
+        ).deprecated();
 
         b.method(
-            "SetBwMode",
-            ("new_mode", ),
+            "SetAutoRefresh",
+            ("state", ),
             (),
-            move |_ctx: &mut Context, _dum: &mut EbcObject, (new_mode, ): (u8, )| {
-                sys_handler::set_bw_mode(new_mode);
-                let signal_msg = bwmode_changed(_ctx.path(), &());
+            move |_ctx: &mut Context, _dum: &mut EbcObject, (state, ): (bool, )| {
+                sys_handler::set_auto_refresh(state);
+                let signal_msg = auto_refresh_changed(_ctx.path(), &());
                 _ctx.push_msg(signal_msg);
 
                 Ok(())
@@ -315,12 +291,12 @@ fn main() -> Result<(), Box<dyn Error>> {
         );
 
         b.method(
-            "SetNoOffScreen",
+            "SetBwMode",
             ("new_mode", ),
             (),
             move |_ctx: &mut Context, _dum: &mut EbcObject, (new_mode, ): (u8, )| {
-                sys_handler::set_no_off_screen(new_mode);
-                let signal_msg = nooffscreen_changed(_ctx.path(), &());
+                sys_handler::set_bw_mode(new_mode);
+                let signal_msg = bw_mode_changed(_ctx.path(), &());
                 _ctx.push_msg(signal_msg);
 
                 Ok(())
@@ -328,45 +304,24 @@ fn main() -> Result<(), Box<dyn Error>> {
         );
 
         b.method(
-            "GetNoOffScreen",
+            "GetBwDitherInvert",
             (),
             ("current_mode", ),
             move |_ctx: &mut Context, _dum: &mut EbcObject, ( )| {
-                let ret_value = sys_handler::get_no_off_screen();
+                let ret_value = sys_handler::get_bw_dither_invert();
 
                 Ok((ret_value, ))
             }
         );
 
         b.method(
-            "SetAutoRefresh",
-            ("state", ),
+            "SetBwDitherInvert",
+            ("new_mode", ),
             (),
-            move |_ctx: &mut Context, _dum: &mut EbcObject, (state, ): (bool, )| {
-                sys_handler::set_auto_refresh(state);
-
-                Ok(())
-            }
-        );
-
-
-        b.method(
-            "GetAutorefresh",
-            (),
-            ("state_autorefresh", ),
-            move |_ctx: &mut Context, _dum: &mut EbcObject, ( )| {
-                let ret_value = sys_handler::get_auto_refresh();
-
-                Ok((ret_value, ))
-            }
-        );
-
-        b.method(
-            "SetDclkSelect",
-            ("state", ),
-            (),
-            move |_ctx: &mut Context, _dum: &mut EbcObject, (state, ): (u8, )| {
-                sys_handler::set_dclk_select(state);
+            move |_ctx: &mut Context, _dum: &mut EbcObject, (new_mode, ): (bool, )| {
+                sys_handler::set_bw_dither_invert(new_mode);
+                let signal_msg = bw_dither_invert_changed(_ctx.path(), &());
+                _ctx.push_msg(signal_msg);
 
                 Ok(())
             }
@@ -384,6 +339,70 @@ fn main() -> Result<(), Box<dyn Error>> {
         );
 
         b.method(
+            "SetDclkSelect",
+            ("state", ),
+            (),
+            move |_ctx: &mut Context, _dum: &mut EbcObject, (state, ): (u8, )| {
+                sys_handler::set_dclk_select(state);
+                let signal_msg = dclk_select_changed(_ctx.path(), &());
+                _ctx.push_msg(signal_msg);
+
+                Ok(())
+            }
+        );
+
+        b.method(
+            "GetDefaultWaveform",
+            (),
+            ("current_waveform", ),
+            move |_ctx: &mut Context, _dum: &mut EbcObject, ( )| {
+                let ret_value = sys_handler::get_default_waveform();
+
+                Ok((ret_value, ))
+            }
+        );
+
+        b.method(
+            "SetDefaultWaveform",
+            ("waveform", ),
+            (),
+            move |_ctx: &mut Context, _dum: &mut EbcObject, (waveform, ): (u8, )| {
+                sys_handler::set_default_waveform(waveform);
+                // emit the signal
+                let signal_msg = waveform_changed(_ctx.path(), &());
+                _ctx.push_msg(signal_msg);
+
+                Ok(())
+            }
+        );
+
+        b.method(
+            "GetNoOffScreen",
+            (),
+            ("current_mode", ),
+            move |_ctx: &mut Context, _dum: &mut EbcObject, ( )| {
+                let ret_value = sys_handler::get_no_off_screen();
+                println!("get_no_off_screen: {}", ret_value);
+
+                Ok((ret_value, ))
+            }
+        );
+
+        b.method(
+            "SetNoOffScreen",
+            ("new_mode", ),
+            (),
+            move |_ctx: &mut Context, _dum: &mut EbcObject, (new_mode, ): (bool, )| {
+                println!("set_no_off_screen");
+                sys_handler::set_no_off_screen(new_mode);
+                let signal_msg = no_off_screen_changed(_ctx.path(), &());
+                _ctx.push_msg(signal_msg);
+
+                Ok(())
+            }
+        );
+
+        b.method(
             "RequestQualityOrPerformanceMode",
             ("mode_request", ),
             (),
@@ -392,7 +411,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                 match mode_request{
                     // quality mode
                     0 | 1 => {
-                        let signal_msg = request_quality_or_performance_mode(
+                        let signal_msg = requested_quality_or_performance_mode(
                             _ctx.path(), &(mode_request, )
                         );
                         _ctx.push_msg(signal_msg);
