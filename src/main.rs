@@ -717,6 +717,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     });
 
     let iface_token4 = cr.register("org.pinenote.misc", |b| {
+        let travel_model_changed1 = b.signal::<( ), _>("TravelModeChanged", ()).msg_fn();
+        let travel_model_changed2 = b.signal::<( ), _>("TravelModeChanged", ()).msg_fn();
 
         b.method(
             "EnableTravelMode",
@@ -730,6 +732,9 @@ fn main() -> Result<(), Box<dyn Error>> {
                     "/sys/devices/platform/gpio-keys/power/wakeup",
                     "disabled"
                 );
+                let signal_msg = travel_model_changed1(_ctx.path(), &());
+                _ctx.push_msg(signal_msg);
+
                 Ok(())
             }
         );
@@ -746,10 +751,42 @@ fn main() -> Result<(), Box<dyn Error>> {
                     "/sys/devices/platform/gpio-keys/power/wakeup",
                     "enabled"
                 );
+                let signal_msg = travel_model_changed2(_ctx.path(), &());
+                _ctx.push_msg(signal_msg);
                 Ok(())
             }
         );
 
+        b.method(
+            "GetTravelMode",
+            (),
+            ("in_travel_mode", ),
+            move |_ctx: &mut Context, _hello: &mut EbcObject, ()| {
+                println!("Checking travel mode");
+
+                // check cover wakeup status
+                let wakeup_state = sys_handler::read_file(
+                    "/sys/devices/platform/gpio-keys/power/wakeup",
+                );
+                let mut result:  u32 = 0;
+                println!("Result: {}", result);
+                match wakeup_state.as_str() {
+                    "disabled" => {
+                        println!("travel mode is enabled");
+                        result = 1;
+                    },
+                    _ => {
+
+                    }
+                }
+
+                if result == 0{
+                    println!("travel mode is disabled");
+                }
+
+                Ok((result, ))
+            }
+        );
     });
 
     cr.insert("/ebc", &[iface_token], EbcObject{});

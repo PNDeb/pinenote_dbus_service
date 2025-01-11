@@ -76,7 +76,9 @@ For the impatient, here are a few dbus-send commands:
 	dbus-send --print-reply --system --dest=org.pinenote.pen /pen org.pinenote.pen.GetBattery
 
     # travel mode
-    dbus-send --print-reply --system --dest=org.pinenote.misc /misc org.pinenote.pen.EnableTravelMode
+    dbus-send --print-reply --system --dest=org.pinenote.misc /misc org.pinenote.misc.EnableTravelMode
+    dbus-send --print-reply --system --dest=org.pinenote.misc /misc org.pinenote.misc.DisableTravelMode
+	dbus-send --print-reply --system --dest=org.pinenote.misc /misc org.pinenote.misc.GetTravelMode
 
     # set off-screen content (temporary)
     dbus-send --print-reply --system --dest=org.pinenote.ebc /ebc org.pinenote.ebc.SetOfflineScreenFromFileTemporary string:"/lib/firmware/rockchip/rockchip_ebc_default_screen.bin"
