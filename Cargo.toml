@@ -1,10 +1,11 @@
 [package]
 name = "pinenote_dbus_service"
-version = "0.2.2-dev5"
+version = "0.2.3"
 edition = "2021"
 license = "Apache-2.0/MIT"
 authors = [
-	"Maximilian Weigand <mweigand@mweigand.net>"
+	"Maximilian Weigand <mweigand@mweigand.net>",
+	"PineNote Community"
 ]
 description = "A DBus service for the Pine64 Pinenote"
 repository = "https://github.com/PNDeb/pinenote_dbus_service"
