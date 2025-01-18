@@ -7,6 +7,7 @@ use std::{
 use std::io::{BufRead, BufReader};
 
 pub fn write_to_file(filename : &str, new_value : &str) {
+    println!("Writing to {filename}: {new_value}");
     let file = OpenOptions::new().write(true)
          .open(filename).expect("Error opening the file");
 
@@ -53,12 +54,12 @@ fn read_ebc_file_bool(parameter: &str) -> bool {
         "0" => false,
         _ => panic!("Unexpected value in sysfs file, expected 'Y' or 'N'"),
     };
-    println!("read_ebc_file_bool({}) {} → {}", parameter, buf.trim(), out);
     return out;
 }
 
 fn write_ebc_file(parameter : &str, new_value : u8) {
     let device = format!("/sys/module/rockchip_ebc/parameters/{parameter}");
+    println!("Writing to {device}: {new_value}");
     let file = OpenOptions::new().write(true)
          .open(device).expect("Error opening the file");
 
@@ -67,6 +68,7 @@ fn write_ebc_file(parameter : &str, new_value : u8) {
 
 fn write_ebc_file_u32(parameter : &str, new_value : u32) {
     let device = format!("/sys/module/rockchip_ebc/parameters/{parameter}");
+    println!("Writing to {device}: {new_value}");
     let file = OpenOptions::new().write(true)
          .open(device).expect("Error opening the file");
 
@@ -76,6 +78,7 @@ fn write_ebc_file_u32(parameter : &str, new_value : u32) {
 pub fn write_ebc_energy_control(new_value : &str) {
     // write: allow only values "on" and "auto"
     let device = format!("/sys/devices/platform/fdec0000.ebc/power/control");
+    println!("Writing to {device}: {new_value}");
     let file = OpenOptions::new().write(true)
          .open(device).expect("Error opening the file");
 

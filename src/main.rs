@@ -382,7 +382,6 @@ fn main() -> Result<(), Box<dyn Error>> {
             ("current_mode", ),
             move |_ctx: &mut Context, _dum: &mut EbcObject, ( )| {
                 let ret_value = sys_handler::get_no_off_screen();
-                println!("get_no_off_screen: {}", ret_value);
 
                 Ok((ret_value, ))
             }
