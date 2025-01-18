@@ -1,10 +1,14 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: pinenote_dbus_service
-Upstream-Contact: Maximilian Weigand <mweigand@mweigand.net>
+Upstream-Contact:
+ Maximilian Weigand <mweigand@mweigand.net>
+ PineNote Community
 Source: https://github.com/PNDeb/pinenote_dbus_service
 
 Files: *
-Copyright: FIXME (overlay) UNKNOWN-YEARS Maximilian Weigand <mweigand@mweigand.net>
+Copyright:
+ FIXME (overlay) UNKNOWN-YEARS Maximilian Weigand <mweigand@mweigand.net>
+ FIXME (overlay) UNKNOWN-YEARS PineNote Community
 License: Apache-2.0 or MIT
 Comment:
  FIXME (overlay): Since upstream copyright years are not available in
@@ -56,6 +60,7 @@ Files: packaging_debian/overlay_pinenote_dbus_service/copyright.debcargo.hint
 Copyright:
  2014-2018 David Henningsson <diwic@ubuntu.com> and other contributors
  2014-2018 David Henningsson <diwic@ubuntu.com> and other contributors
+ 2014-2018 David Henningsson diwic@ubuntu.com and other contributors
  2024 Debian Rust Maintainers <pkg-rust-maintainers@alioth-lists.debian.net>
 License: UNKNOWN-LICENSE; FIXME (overlay)
 Comment:

@@ -123,7 +123,7 @@ For the impatient, here are a few dbus-send commands:
          dpkg -i out_crossroads/*.deb
 
 * Packaging pinenote-dbus-service:
-	* Check and adapt: *overlay_pinenote_dbus_service/changelog*
+	* (Important!) Check and adapt: *overlay_pinenote_dbus_service/changelog*
 	* Execute:
 
           package_pinenote_dbus_service.sh
