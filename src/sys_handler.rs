@@ -9,14 +9,14 @@ use std::io::{BufRead, BufReader};
 pub fn write_to_file(filename : &str, new_value : &str) {
     println!("Writing to {filename}: {new_value}");
     let file = OpenOptions::new().write(true)
-         .open(filename).expect("Error opening the file");
+        .open(filename).expect("Error opening the file");
 
     write!(&file, "{}", new_value).unwrap();
 }
 
 pub fn read_file(filename : &str) -> String {
     let file = OpenOptions::new().read(true)
-         .open(filename).expect("Error opening the file");
+        .open(filename).expect("Error opening the file");
     let mut reader = BufReader::new(file);
     let mut buf = String::new();
     let mut num_bytes = 1;
@@ -31,7 +31,7 @@ pub fn read_file(filename : &str) -> String {
 fn read_ebc_file(parameter : &str) -> String {
     let parameter_file = format!("/sys/module/rockchip_ebc/parameters/{parameter}");
     let file = OpenOptions::new().read(true)
-         .open(parameter_file).expect("Error opening the file");
+        .open(parameter_file).expect("Error opening the file");
     let mut reader = BufReader::new(file);
     let mut buf = String::new();
     let _num_bytes = reader.read_line(&mut buf).unwrap();
@@ -42,7 +42,7 @@ fn read_ebc_file(parameter : &str) -> String {
 fn read_ebc_file_bool(parameter: &str) -> bool {
     let parameter_file = format!("/sys/module/rockchip_ebc/parameters/{parameter}");
     let file = OpenOptions::new().read(true)
-         .open(parameter_file).expect("Error opening the file");
+        .open(parameter_file).expect("Error opening the file");
     let mut reader = BufReader::new(file);
     let mut buf = String::new();
     reader.read_line(&mut buf).unwrap();
@@ -61,7 +61,7 @@ fn write_ebc_file(parameter : &str, new_value : u8) {
     let device = format!("/sys/module/rockchip_ebc/parameters/{parameter}");
     println!("Writing to {device}: {new_value}");
     let file = OpenOptions::new().write(true)
-         .open(device).expect("Error opening the file");
+        .open(device).expect("Error opening the file");
 
     write!(&file, "{}", new_value).unwrap();
 }
@@ -70,7 +70,7 @@ fn write_ebc_file_u32(parameter : &str, new_value : u32) {
     let device = format!("/sys/module/rockchip_ebc/parameters/{parameter}");
     println!("Writing to {device}: {new_value}");
     let file = OpenOptions::new().write(true)
-         .open(device).expect("Error opening the file");
+        .open(device).expect("Error opening the file");
 
     write!(&file, "{}", new_value).unwrap();
 }
@@ -80,7 +80,7 @@ pub fn write_ebc_energy_control(new_value : &str) {
     let device = format!("/sys/devices/platform/fdec0000.ebc/power/control");
     println!("Writing to {device}: {new_value}");
     let file = OpenOptions::new().write(true)
-         .open(device).expect("Error opening the file");
+        .open(device).expect("Error opening the file");
 
     write!(&file, "{}", new_value).unwrap();
 }
@@ -88,7 +88,7 @@ pub fn write_ebc_energy_control(new_value : &str) {
 pub fn read_ebc_energy_control() -> String {
     let parameter_file = format!("/sys/devices/platform/fdec0000.ebc/power/control");
     let file = OpenOptions::new().read(true)
-         .open(parameter_file).expect("Error opening the file");
+        .open(parameter_file).expect("Error opening the file");
     let mut reader = BufReader::new(file);
     let mut buf = String::new();
     let _num_bytes = reader.read_line(&mut buf).unwrap();
@@ -135,7 +135,7 @@ pub fn set_default_waveform(waveform: u8) {
 }
 
 pub fn get_default_waveform() -> u8{
-   read_ebc_file("default_waveform").parse::<u8>().unwrap()
+    read_ebc_file("default_waveform").parse::<u8>().unwrap()
 }
 
 pub fn get_bw_mode() -> u8{
