@@ -6,21 +6,21 @@
 typedef int bool;
 
 struct drm_rockchip_ebc_trigger_global_refresh {
-	bool trigger_global_refresh;
+    bool trigger_global_refresh;
 };
 
 #define DRM_IOCTL_ROCKCHIP_EBC_GLOBAL_REFRESH  DRM_IOWR(DRM_COMMAND_BASE + 0x00, struct drm_rockchip_ebc_trigger_global_refresh)
 
 int main()
 {
-	int fd = open("/dev/dri/by-path/platform-fdec0000.ebc-card", DRM_RDWR);
-	if(fd < 0) {
-		return 1;
-	}
-	struct drm_rockchip_ebc_trigger_global_refresh arg;
-	arg.trigger_global_refresh = 1;
-	int ret = ioctl(fd, DRM_IOCTL_ROCKCHIP_EBC_GLOBAL_REFRESH, &arg);
-	return ret;
+    int fd = open("/dev/dri/by-path/platform-fdec0000.ebc-card", DRM_RDWR);
+    if(fd < 0) {
+        return 1;
+    }
+    struct drm_rockchip_ebc_trigger_global_refresh arg;
+    arg.trigger_global_refresh = 1;
+    int ret = ioctl(fd, DRM_IOCTL_ROCKCHIP_EBC_GLOBAL_REFRESH, &arg);
+    return ret;
 }
 
 
@@ -51,7 +51,6 @@ const DRM_IOCTL_ROCKCHIP_EBC_SET_OFFSCREEN: u64 = 3222299713;
 ioctl_readwrite_bad!(ebc_ioctl_2, DRM_IOCTL_ROCKCHIP_EBC_SET_OFFSCREEN, PayloadEbc2);
 
 pub fn set_offline_screen(new_content: &Vec<u8>) {
-
     println!("Setting offline screen");
     // 1314144
     // let test_content = vec![100u8; 1314144];
@@ -86,7 +85,7 @@ pub fn set_offline_screen(new_content: &Vec<u8>) {
 }
 
 pub fn trigger_global_refresh() {
-    println!("Hello, world!");
+    println!("Triggering global refresh");
     let ebc_device = "/dev/dri/by-path/platform-fdec0000.ebc-card";
     let file = OpenOptions::new()
         .read(true)
@@ -100,7 +99,7 @@ pub fn trigger_global_refresh() {
         let result = ebc_ioctl(file.as_raw_fd(), arg_ptr);
         match result {
             Err(why) => panic!("{:?}", why),
-            Ok(ret) => println!("{}", ret),
+            Ok(_ret) => {},
         }
     }
 }
