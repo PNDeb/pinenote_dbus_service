@@ -64,6 +64,7 @@ For the impatient, here are a few dbus-send commands:
 	dbus-send --system --print-reply --dest=org.pinenote.ebc /ebc org.pinenote.ebc.SetDefaultWaveform byte:2
 	dbus-send --print-reply --system --dest=org.pinenote.ebc /ebc org.pinenote.ebc.GetDefaultWaveform
 
+    # only batch-1 stylus with BLE buttons
 	# initiate a scan for the stylus (buttons). Repeatedly push the buttons
 	# during the 12-20 seconds scan interval
 	dbus-send --print-reply --system --dest=org.pinenote.pen /pen org.pinenote.pen.DoScan
@@ -81,6 +82,7 @@ For the impatient, here are a few dbus-send commands:
 	dbus-send --print-reply --system --dest=org.pinenote.misc /misc org.pinenote.misc.GetTravelMode
 
     # set off-screen content (temporary, not persistent across reboots)
+    # note: you must provide absolute paths!
     dbus-send --print-reply --system --dest=org.pinenote.ebc /ebc org.pinenote.ebc.SetOfflineScreenFromFileTemporary string:"/lib/firmware/rockchip/rockchip_ebc_default_screen.bin"
 
 ## Introspection
