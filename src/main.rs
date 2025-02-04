@@ -553,6 +553,51 @@ fn main() -> Result<(), Box<dyn Error>> {
             }
         );
 
+        /*
+        b.method(
+            "SetOfflineScreenFromFilePermanently",
+            ("filename", ),
+            ( ),
+            move |_ctx: &mut Context, _dum: &mut EbcObject, (filename, ): (String, ) | {
+                println!("Setting permanent offscreen");
+
+                let f = File::open(filename);
+                match f {
+                    Ok(mut f) => {
+                        println!("File opened successful");
+                        // let mut buffer = [0; 1872 * 1404 / 2];
+                        let mut buffer = vec![0; 1314144];
+
+                        // read exactly 10 bytes
+                        let read_result = f.read_exact(&mut buffer);
+                        match read_result {
+                            Ok(_read_reasult) => {
+                                println!("Read successful - setting offline content");
+                                ebc_ioctl::set_offline_screen(&buffer);
+                                // todo: copy/write to file
+                                // regenerate initrd
+
+                            },
+                            Err(_e) => {
+                                println!("Read not successful");
+                            }
+                        };
+                    },
+                    Err(e) => {
+                        if e.kind() == ErrorKind::NotFound {
+                            println!("Offscreen file not found!");
+                        }
+                    }
+                };
+
+                // let signal_msg = _ctx.make_signal("PenRegStatusChanged", ());
+                // _ctx.push_msg(signal_msg);
+
+                Ok(())
+            }
+        );
+        */
+
     });
 
     let iface_token2 = cr.register("org.pinenote.pen", |b| {
