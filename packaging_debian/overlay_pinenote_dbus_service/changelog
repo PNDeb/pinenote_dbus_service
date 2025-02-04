@@ -1,18 +1,24 @@
+rust-pinenote-dbus-service (0.2.4) trixie; urgency=medium
+
+  * Improvements by Peter Nerlich (see git commits)
+
+ -- Maximilian Weigand (PineNote Signing Key 4) <mweigand@mweigand.net>  Tue, 04 Feb 2025 11:25:05 +0200
+
 rust-pinenote-dbus-service (0.2.3) trixie; urgency=medium
 
-  	* org.pinenote.misc now holds the following methods:
-            * GetTravelMode
-            * EnableTravelMode
-            * DisableTravelMode
-	* Implement org.pinenote.ebc.SetOfflineScreenFromFileTemporary
-	* Add EnterWritingMode and QuitWritingMode functions that save the current
-	  state before preparing everything for writing
-	* Add a few more getter/setter functions for rockchip_ebc module
-	  parameters
-	* The following binaries are also shipped with this package:
-		* pn_enter_writing_mode
-    	* pn_quit_writing_mode
-		* pn_trigger_global_refresh
+  * org.pinenote.misc now holds the following methods:
+      * GetTravelMode
+      * EnableTravelMode
+      * DisableTravelMode
+  * Implement org.pinenote.ebc.SetOfflineScreenFromFileTemporary
+  * Add EnterWritingMode and QuitWritingMode functions that save the current
+    state before preparing everything for writing
+  * Add a few more getter/setter functions for rockchip_ebc module
+    parameters
+  * The following binaries are also shipped with this package:
+  	* pn_enter_writing_mode
+  * pn_quit_writing_mode
+  	* pn_trigger_global_refresh
 
  -- Maximilian Weigand (PineNote Signing Key 4) <mweigand@mweigand.net>  Sat, 18 Jan 2025 11:25:05 +0200
 
