@@ -162,7 +162,17 @@ pub fn set_dclk_select(new_mode: u8){
     write_ebc_file("dclk_select", new_mode);
 }
 
+pub fn get_globre_convert_before() ->u8 {
+    read_ebc_file("globre_convert_before").parse::<u8>().unwrap()
+}
+
+pub fn set_globre_convert_before(new_mode: u8){
+    // todo: allowed values: 0, 1
+    write_ebc_file("globre_convert_before", new_mode);
+}
+
 /*
+* [x] globre_convert_before
 * [x] auto_refresh
 * [x] bw_dither_invert
 * [x] bw_mode
