@@ -857,7 +857,6 @@ fn main() -> Result<(), Box<dyn Error>> {
                     "/sys/devices/platform/gpio-keys/power/wakeup",
                 );
                 let mut result:  u32 = 0;
-                println!("Result: {}", result);
                 match wakeup_state.as_str() {
                     "disabled" => {
                         println!("travel mode is enabled");
