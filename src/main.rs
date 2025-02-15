@@ -154,6 +154,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         let requested_quality_or_performance_mode = b.signal::<(u8, ), _>("RequestedQualityOrPerformance", ("requested_mode", )).msg_fn();
         let delay_a_changed = b.signal::<( ), _>("DelayAChanged", ()).msg_fn();
         let split_area_limit_changed = b.signal::<( ), _>("SplitAreaLimitChanged", ()).msg_fn();
+        let globre_convert_before_changed = b.signal::<( ), _>("GlobreConvertBeforeChanged", ()).msg_fn();
 
         // we need setters/getters for:
         // auto_refresh
@@ -321,6 +322,30 @@ fn main() -> Result<(), Box<dyn Error>> {
             move |_ctx: &mut Context, _dum: &mut EbcObject, (new_mode, ): (bool, )| {
                 sys_handler::set_bw_dither_invert(new_mode);
                 let signal_msg = bw_dither_invert_changed(_ctx.path(), &());
+                _ctx.push_msg(signal_msg);
+
+                Ok(())
+            }
+        );
+
+        b.method(
+            "GetGlobreConvertBefore",
+            (),
+            ("globre_convert_before", ),
+            move |_ctx: &mut Context, _dum: &mut EbcObject, ( )| {
+                let ret_value = sys_handler::get_globre_convert_before();
+
+                Ok((ret_value, ))
+            }
+        );
+
+        b.method(
+            "SetGlobreConvertBefore",
+            ("state", ),
+            (),
+            move |_ctx: &mut Context, _dum: &mut EbcObject, (state, ): (u8, )| {
+                sys_handler::set_globre_convert_before(state);
+                let signal_msg = globre_convert_before_changed(_ctx.path(), &());
                 _ctx.push_msg(signal_msg);
 
                 Ok(())
