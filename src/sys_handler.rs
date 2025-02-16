@@ -175,13 +175,14 @@ pub fn set_dclk_select(new_mode: u8){
     write_ebc_file("dclk_select", new_mode);
 }
 
-pub fn get_globre_convert_before() ->u8 {
-    read_ebc_file("globre_convert_before").parse::<u8>().unwrap()
+pub fn get_globre_convert_before() -> bool {
+    let value = read_ebc_file_bool("globre_convert_before");
+    value
 }
 
-pub fn set_globre_convert_before(new_mode: u8){
+pub fn set_globre_convert_before(new_mode: bool){
     // todo: allowed values: 0, 1
-    write_ebc_file("globre_convert_before", new_mode);
+    write_ebc_file("globre_convert_before", new_mode as u8);
 }
 
 /*
