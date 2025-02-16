@@ -52,7 +52,9 @@ fn read_ebc_file(parameter : &str) -> String {
 fn read_ebc_file_bool(parameter: &str) -> bool {
     let parameter_file = format!("/sys/module/rockchip_ebc/parameters/{parameter}");
     let file = OpenOptions::new().read(true)
-        .open(parameter_file).expect("Error opening the file");
+        .open(parameter_file).expect(
+            format!("Error opening EBC module parameter: {}", parameter).as_str()
+        );
     let mut reader = BufReader::new(file);
     let mut buf = String::new();
     reader.read_line(&mut buf).unwrap();
