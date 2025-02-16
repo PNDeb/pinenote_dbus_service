@@ -14,17 +14,28 @@ pub fn write_to_file(filename : &str, new_value : &str) {
 }
 
 pub fn read_file(filename : &str) -> String {
-    let file = OpenOptions::new().read(true)
-        .open(filename).expect("Error opening the file");
-    let mut reader = BufReader::new(file);
-    let mut buf = String::new();
-    let mut num_bytes = 1;
-    while num_bytes > 0 {
-        num_bytes = reader.read_line(&mut buf).unwrap_or_default();
-    }
-    //println!("buf: @{}@", buf);
+    let file_result = OpenOptions::new().read(true) .open(filename);
+    match file_result {
+        Ok(file) => {
+            let mut reader = BufReader::new(file);
+            let mut buf = String::new();
+            let mut num_bytes = 1;
+            while num_bytes > 0 {
+                num_bytes = reader.read_line(&mut buf).unwrap_or_default();
+            }
+            //println!("buf: @{}@", buf);
 
-    return buf.trim_end().to_string();
+            return buf.trim_end().to_string();
+        },
+        Err(e) => {
+            println!("There was an error opening the file {} for reading",
+                filename
+            );
+            // for now we panic here, as we would first need to define what to do in case the
+            // requested file is not there (i.e., what to return)
+            panic!("File (for reading) not found: {} (error: {})", filename, e);
+        }
+    }
 }
 
 fn read_ebc_file(parameter : &str) -> String {
