@@ -343,7 +343,8 @@ fn main() -> Result<(), Box<dyn Error>> {
             "SetGlobreConvertBefore",
             ("state", ),
             (),
-            move |_ctx: &mut Context, _dum: &mut EbcObject, (state, ): (u8, )| {
+            move |_ctx: &mut Context, _dum: &mut EbcObject, (state, ): (bool, )| {
+                println!("Setting GlobreConvertBeforeChanged to {}", state);
                 sys_handler::set_globre_convert_before(state);
                 let signal_msg = globre_convert_before_changed(_ctx.path(), &());
                 _ctx.push_msg(signal_msg);
